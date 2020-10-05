@@ -28,51 +28,15 @@
             //}
         }
     }
-    
-    const requestImage = (section, heroName, imageType) =>{
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', `/loadImage?heroName=${heroName}&imageType=${imageType}`);
-        
-        xhr.setRequestHeader('Accept', 'image/png');
-        
-        xhr.onload = () => {
-            let portrait = document.createElement("IMG");
-            portrait.className = `${heroName}Portrait`;
-            portrait.alt = `${heroName} Portrait`;
-            portrait.src = `../images/`
-        }; 
-       
-        xhr.send();
-        
-        //preventDefault();
-        return false;
-    };
 
-    const requestLogo = (header, imageType) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', `/loadImage?imageType=${imageType}`);
-        
-        xhr.setRequestHeader('Accept', 'image/png');
-        
-        xhr.onload = () => {
-            let logo = document.createElement("IMG");
-            logo.className = "logo";
-            logo.alt = "Dota 2 Logo";
-            logo.src = "../images/logo.png";
-            header.appendChild(logo);
-        }; 
-       
-        xhr.send();
-        
-        //preventDefault();
-        return false;
-    };
-    
     const createStructure = (obj, heroName, content) => {
         
         createHeader(obj, heroName, content);
-        createPortraitSection(obj, heroName, content);
-        createHeroInfoSection(obj, heroName, content);
+        let heroContent = document.createElement('section');
+        heroContent.className = 'heroContent';
+        content.appendChild(heroContent);
+        createPortraitSection(obj, heroName, heroContent);
+        createHeroInfoSection(obj, heroName, heroContent);
     };
     
     const createHeader = (obj, heroName, content) => {
@@ -80,12 +44,15 @@
         header.className = 'header';
         content.appendChild(header);
         
-        //needs work
-        requestLogo(header, 'logo');
-        
+        let logo = document.createElement("IMG");
+        logo.className = "logo";
+        logo.alt = "Dota 2 Logo";
+        logo.src = "/loadImage?imageType=logo";
+        header.appendChild(logo);
         
         let heroNameH1 = document.createElement("h1");
         heroNameH1.innerHTML = obj.users[heroName].Name;
+        heroNameH1.className = 'heroName';
         header.appendChild(heroNameH1);
     };
 
@@ -94,8 +61,18 @@
         portraitSection.className = 'portrait';
         content.appendChild(portraitSection);
         
+        console.log(heroName);
+        
         //needs work
-        //requestImage(portraitSection, heroName, portraitSection.className);
+        let portraitContainer = document.createElement("section");
+        portraitContainer.className = 'portraitContainer';
+        portraitSection.appendChild(portraitContainer);
+        
+        let portrait = document.createElement("IMG");
+        portrait.className = `portrait`;
+        portrait.alt = `${heroName} Portrait`;
+        portrait.src = `/loadImage?heroName=${heroName}&imageType=portrait`;
+        portraitContainer.appendChild(portrait);
         
         createHeroStats(obj, heroName, portraitSection);
         createTalentTable(obj, heroName, portraitSection);
@@ -105,6 +82,11 @@
         let heroStats = document.createElement("section");
         heroStats.className = 'heroStats';
         portraitSection.appendChild(heroStats);
+        
+        let stats = document.createElement('h2');
+        stats.innerHTML = "Stats";
+        stats.className = "stats";
+        heroStats.appendChild(stats);
         
         //table containing all hero stats
         let statTable = document.createElement("table");
@@ -158,7 +140,7 @@
         healthRegen.innerHTML = "Health Regen";
         healthRegenRow.appendChild(healthRegen);
         let healthRegenDesc = document.createElement('th');
-        healthRegenDesc.innerHTML = `${obj.users[heroName].Stats.Health_Regen_Base + (obj.users[heroName].Stats.Strength * 0.1)} + ${(obj.users[heroName].Stats.Strength_Scale * 0.1).toFixed(2)} per level`;
+        healthRegenDesc.innerHTML = `${(obj.users[heroName].Stats.Health_Regen_Base + obj.users[heroName].Stats.Strength * 0.1).toFixed(2)} + ${(obj.users[heroName].Stats.Strength_Scale * 0.1).toFixed(2)} per level`;
         healthRegenRow.appendChild(healthRegenDesc);
         statTable.appendChild(healthRegenRow);
         
@@ -615,8 +597,8 @@
         <option value="head">HEAD</option>
       </select>
       <select id="heroName">
-          <option value="Axe">Axe</option>
-          <option value="QOP">QOP</option>
+          <option value="Axe" alt="Axe">Axe</option>
+          <option value="Kunkka">Kunkka</option>
       </select>
       <input type="submit" value="Get Hero Data" />
     </form>

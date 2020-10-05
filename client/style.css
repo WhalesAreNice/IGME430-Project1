@@ -23,14 +23,18 @@ html, body {
     font-size: 2em;
 }
 
+.heroContent{
+    width:100%;
+}
+
 .portrait, .heroInfo{
-    width:49%;
+    width:50%;
     display:inline-block;
     margin-bottom: 2%;
     vertical-align:top;
 }
 
-th, .lore, .skillNumber, .skillDesc, .skills, .talents{
+th, .lore, .skillNumber, .skillDesc, .skills, .talents, .stats{
     text-align: left;
     padding-right: 10px;
     padding-left: 10px;
@@ -38,4 +42,33 @@ th, .lore, .skillNumber, .skillDesc, .skills, .talents{
 
 .skillDesc{
     font-weight: bold;
+}
+
+.logo {
+    width:50px;
+    display: inline-block;
+    text-align: left;
+}
+
+.heroName{
+    display:inline-block;
+    margin: 0;
+}
+
+.portraitContainer{
+    display:block;
+    width:100%;
+}
+
+.portrait{
+    //width:51%;
+}
+
+
+
+@media only screen and (min-width: 1200px) {
+    #content{
+        width:1200px;
+        margin:0 auto;
+    }
 }
