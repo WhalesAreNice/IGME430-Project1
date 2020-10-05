@@ -1,4 +1,4 @@
-const users = {//will eventually put this into another file just have 1 for an example pull
+const users = {//will eventually put this into another file
     "Axe":{
         Name: "Axe",
         Stats:{

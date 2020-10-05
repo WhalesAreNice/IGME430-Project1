@@ -7,18 +7,17 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
     let heroesObject;
+    let totalNumOfHereos = 2;
 
     const parseJSON = (xhr, content) => {
         if(xhr.response && xhr.getResponseHeader('Content-Type') == 'application/json') {
             const obj = JSON.parse(xhr.response);
             console.dir(obj);
     
-            const heroName = document.querySelector('#heroName').value;
-            
-            
+            //uses a random hero
+            const heroName = selectRandomHero();
             
             createStructure(obj, heroName, content);
-            
             
             
             //if(obj.message){
@@ -28,6 +27,17 @@
             //}
         }
     }
+    
+    function selectRandomHero() {
+        let heroIndex = Math.floor(Math.random() * totalNumOfHereos + 1);
+        
+        if(heroIndex == 1){
+            return "Axe";
+        }else{
+            return "Kunkka";
+        }
+        
+    };
 
     const createStructure = (obj, heroName, content) => {
         
@@ -69,7 +79,7 @@
         portraitSection.appendChild(portraitContainer);
         
         let portrait = document.createElement("IMG");
-        portrait.className = `portrait`;
+        portrait.className = `heroPortrait`;
         portrait.alt = `${heroName} Portrait`;
         portrait.src = `/loadImage?heroName=${heroName}&imageType=portrait`;
         portraitContainer.appendChild(portrait);
@@ -385,7 +395,7 @@
         //Skills dynamically because some heroes have different amount of skills
         let skills = document.createElement('h2');
         skills.innerHTML = "Skills";
-        skills.className = "skills";
+        skills.className = "skill";
         heroInfoSection.appendChild(skills);
         
         let skillLabel = "Skill_";
@@ -398,6 +408,9 @@
                 //make the skill index section
                 let skillSection = document.createElement("section");
                 skillSection.className = "skills";
+                if(skillIndex != 1){
+                    skillSection.className += " notFirst";
+                }
                 heroInfoSection.appendChild(skillSection);
                 
                 //make the name of the skill with the skill index
@@ -474,26 +487,26 @@
     const handleResponse = (xhr, parseResponses) => {
         const content = document.querySelector('#content');
         
-        switch(xhr.status){
-            case 200:
-                content.innerHTML = '<b>Success!</b>';
-                break;
-            case 201:
-                content.innerHTML = '<b>Created!</b>';
-                break;
-            case 204:
-                content.innerHTML = '<b>Updated (No Content)</b>';
-                break;
-            case 400:
-                content.innerHTML = '<b>Bad Request :(</b>';
-                break;
-            case 404:
-                content.innerHTML = '<b>Resource Not Found :(</b>';
-                break;
-            default:
-                content.innerHTML = '<b>Error code not implemented by client! :(</b>';
-                break;
-        }
+        //switch(xhr.status){
+        //    case 200:
+        //        content.innerHTML = '<b>Success!</b>';
+        //        break;
+        //    case 201:
+        //        content.innerHTML = '<b>Created!</b>';
+        //        break;
+        //    case 204:
+        //        content.innerHTML = '<b>Updated (No Content)</b>';
+        //        break;
+        //    case 400:
+        //        content.innerHTML = '<b>Bad Request :(</b>';
+        //        break;
+        //    case 404:
+        //        content.innerHTML = '<b>Resource Not Found :(</b>';
+        //        break;
+        //    default:
+        //        content.innerHTML = '<b>Error code not implemented by client! :(</b>';
+        //        break;
+        //}
         
         parseJSON(xhr, content);
         
@@ -534,8 +547,12 @@
     };
 
     const requestUpdate = (e, userForm) => {
-        const url = userForm.querySelector('#urlField').value;
-        const method = document.querySelector('#methodSelect').value;
+        //const url = userForm.querySelector('#urlField').value;
+        //const method = document.querySelector('#methodSelect').value;
+        
+        const url = '/getUsers';
+        const method = 'get';
+        
         
         const xhr = new XMLHttpRequest();
         xhr.open(method, url);
@@ -561,8 +578,8 @@
         const getUsers = (e) => requestUpdate(e, userForm);
         const addUser = (e) => sendPost(e, nameForm);
         
-        userForm.addEventListener('submit', getUsers);
-        
+        //userForm.addEventListener('submit', getUsers);
+        getUsers();
         
         //nameForm.addEventListener('submit', addUser);
     };
@@ -575,9 +592,10 @@
   </script>
 </head>
 <body>
+ <!--
   <section id="top">
     <h3>Dota 2 Hero Stats</h3>
-    <!--
+    
      <form id="nameForm" action="/addUser" method="post">
       <label for="name">Name: </label>
       <input id="nameField" type="text" name="name" />
@@ -585,7 +603,7 @@
       <input id="ageField" type="number" name="age" min="0" max="100" step="1"/>
       <input type="submit" value="Add User" />
     </form>
-    -->
+    
     
     <form id="userForm" action="/getUsers" method="get">
       <select id='urlField'>
@@ -597,7 +615,7 @@
         <option value="head">HEAD</option>
       </select>
       <select id="heroName">
-          <option value="Axe" alt="Axe">Axe</option>
+          <option value="Axe">Axe</option>
           <option value="Kunkka">Kunkka</option>
       </select>
       <input type="submit" value="Get Hero Data" />
@@ -605,6 +623,8 @@
     
     
   </section>
+  
+  -->
   <section id="content">
        <!--<img src="../images/logo.png" alt="dota 2 logo"> -->
   </section>

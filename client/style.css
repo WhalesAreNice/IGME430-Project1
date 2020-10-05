@@ -15,7 +15,6 @@ html, body {
 }
 
 #content {
-  margin-top: 100px;
   text-align: center;
 }
 
@@ -23,21 +22,44 @@ html, body {
     font-size: 2em;
 }
 
+.header{
+    margin-top:20px;
+}
+
 .heroContent{
     width:100%;
 }
 
 .portrait, .heroInfo{
-    width:50%;
+    width:47%;
     display:inline-block;
     margin-bottom: 2%;
     vertical-align:top;
+    height:100%;
 }
 
-th, .lore, .skillNumber, .skillDesc, .skills, .talents, .stats{
+.portrait {
+    padding-right:2%;
+}
+
+.heroInfo{
+    border-left:2px solid black;
+    padding-left:2%;
+}
+
+th, .lore, .skillNumber, .skillDesc, .skills, .talents, .stats, .skill{
     text-align: left;
     padding-right: 10px;
     padding-left: 10px;
+}
+
+.stats, .talents, .skill, .notFirst {
+    border-top: 2px solid black;
+    padding-top:10px;
+}
+
+.skills {
+    padding-bottom:10px;
 }
 
 .skillDesc{
@@ -53,6 +75,7 @@ th, .lore, .skillNumber, .skillDesc, .skills, .talents, .stats{
 .heroName{
     display:inline-block;
     margin: 0;
+    margin-bottom:20px;
 }
 
 .portraitContainer{
@@ -60,8 +83,8 @@ th, .lore, .skillNumber, .skillDesc, .skills, .talents, .stats{
     width:100%;
 }
 
-.portrait{
-    //width:51%;
+.heroPortrait{
+    width:100%;
 }
 
 
