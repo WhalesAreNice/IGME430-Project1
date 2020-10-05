@@ -6,21 +6,488 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
+    let heroesObject;
+
     const parseJSON = (xhr, content) => {
         if(xhr.response && xhr.getResponseHeader('Content-Type') == 'application/json') {
             const obj = JSON.parse(xhr.response);
             console.dir(obj);
     
-            if(obj.message){
-                content.innerHTML += `<p>${obj.message}</p>`;
-            }else{
-                content.innerHTML += `<p>${xhr.response}</p>`;
-            }
+            const heroName = document.querySelector('#heroName').value;
             
-            console.log(xhr);
             
+            
+            createStructure(obj, heroName, content);
+            
+            
+            
+            //if(obj.message){
+            //    content.innerHTML += `<p>${obj.message}</p>`;
+            //}else{
+            //    content.innerHTML += `<p>${xhr.response}</p>`;
+            //}
         }
     }
+    
+    const requestImage = (section, heroName, imageType) =>{
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `/loadImage?heroName=${heroName}&imageType=${imageType}`);
+        
+        xhr.setRequestHeader('Accept', 'image/png');
+        
+        xhr.onload = () => {
+            let portrait = document.createElement("IMG");
+            portrait.className = `${heroName}Portrait`;
+            portrait.alt = `${heroName} Portrait`;
+            portrait.src = `../images/`
+        }; 
+       
+        xhr.send();
+        
+        //preventDefault();
+        return false;
+    };
+
+    const requestLogo = (header, imageType) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `/loadImage?imageType=${imageType}`);
+        
+        xhr.setRequestHeader('Accept', 'image/png');
+        
+        xhr.onload = () => {
+            let logo = document.createElement("IMG");
+            logo.className = "logo";
+            logo.alt = "Dota 2 Logo";
+            logo.src = "../images/logo.png";
+            header.appendChild(logo);
+        }; 
+       
+        xhr.send();
+        
+        //preventDefault();
+        return false;
+    };
+    
+    const createStructure = (obj, heroName, content) => {
+        
+        createHeader(obj, heroName, content);
+        createPortraitSection(obj, heroName, content);
+        createHeroInfoSection(obj, heroName, content);
+    };
+    
+    const createHeader = (obj, heroName, content) => {
+        let header = document.createElement("section");
+        header.className = 'header';
+        content.appendChild(header);
+        
+        //needs work
+        requestLogo(header, 'logo');
+        
+        
+        let heroNameH1 = document.createElement("h1");
+        heroNameH1.innerHTML = obj.users[heroName].Name;
+        header.appendChild(heroNameH1);
+    };
+
+    const createPortraitSection = (obj, heroName, content) => {
+        let portraitSection = document.createElement("section");
+        portraitSection.className = 'portrait';
+        content.appendChild(portraitSection);
+        
+        //needs work
+        //requestImage(portraitSection, heroName, portraitSection.className);
+        
+        createHeroStats(obj, heroName, portraitSection);
+        createTalentTable(obj, heroName, portraitSection);
+    };
+
+    const createHeroStats = (obj, heroName, portraitSection) => {
+        let heroStats = document.createElement("section");
+        heroStats.className = 'heroStats';
+        portraitSection.appendChild(heroStats);
+        
+        //table containing all hero stats
+        let statTable = document.createElement("table");
+        heroStats.appendChild(statTable);
+        
+        //all the stats
+        
+        //strength
+        let strengthRow = document.createElement('tr');
+        let strength = document.createElement('th');
+        strength.innerHTML = "Strength";
+        strengthRow.appendChild(strength);
+        let strengthDesc = document.createElement('th');
+        strengthDesc.innerHTML = `${obj.users[heroName].Stats.Strength} + ${obj.users[heroName].Stats.Strength_Scale} per level`;
+        strengthRow.appendChild(strengthDesc);
+        statTable.appendChild(strengthRow);
+        
+        //agility
+        let agilityRow = document.createElement('tr');
+        let agility = document.createElement('th');
+        agility.innerHTML = "Agility";
+        agilityRow.appendChild(agility);
+        let agilityDesc = document.createElement('th');
+        agilityDesc.innerHTML = `${obj.users[heroName].Stats.Agility} + ${obj.users[heroName].Stats.Agility_Scale} per level`;
+        agilityRow.appendChild(agilityDesc);
+        statTable.appendChild(agilityRow);
+        
+        //intelligence
+        let intelligenceRow = document.createElement('tr');
+        let intelligence = document.createElement('th');
+        intelligence.innerHTML = "Intelligence";
+        intelligenceRow.appendChild(intelligence);
+        let intelligenceDesc = document.createElement('th');
+        intelligenceDesc.innerHTML = `${obj.users[heroName].Stats.Intelligence} + ${obj.users[heroName].Stats.Intelligence_Scale} per level`;
+        intelligenceRow.appendChild(intelligenceDesc);
+        statTable.appendChild(intelligenceRow);
+        
+        //health
+        let healthRow = document.createElement('tr');
+        let health = document.createElement('th');
+        health.innerHTML = "Health";
+        healthRow.appendChild(health);
+        let healthDesc = document.createElement('th');
+        healthDesc.innerHTML = `${obj.users[heroName].Stats.Health_Base + (obj.users[heroName].Stats.Strength * 20)} + ${obj.users[heroName].Stats.Strength_Scale * 20} per level`;
+        healthRow.appendChild(healthDesc);
+        statTable.appendChild(healthRow);
+        
+        //health regen
+        let healthRegenRow = document.createElement('tr');
+        let healthRegen = document.createElement('th');
+        healthRegen.innerHTML = "Health Regen";
+        healthRegenRow.appendChild(healthRegen);
+        let healthRegenDesc = document.createElement('th');
+        healthRegenDesc.innerHTML = `${obj.users[heroName].Stats.Health_Regen_Base + (obj.users[heroName].Stats.Strength * 0.1)} + ${(obj.users[heroName].Stats.Strength_Scale * 0.1).toFixed(2)} per level`;
+        healthRegenRow.appendChild(healthRegenDesc);
+        statTable.appendChild(healthRegenRow);
+        
+        //mana
+        let manaRow = document.createElement('tr');
+        let mana = document.createElement('th');
+        mana.innerHTML = "Mana";
+        manaRow.appendChild(mana);
+        let manaDesc = document.createElement('th');
+        manaDesc.innerHTML = `${obj.users[heroName].Stats.Mana_Base + (obj.users[heroName].Stats.Intelligence * 12)} + ${(obj.users[heroName].Stats.Intelligence_Scale * 12).toFixed(2)} per level`;
+        manaRow.appendChild(manaDesc);
+        statTable.appendChild(manaRow);
+        
+        //mana regen
+        let manaRegenRow = document.createElement('tr');
+        let manaRegen = document.createElement('th');
+        manaRegen.innerHTML = "Mana Regen";
+        manaRegenRow.appendChild(manaRegen);
+        let manaRegenDesc = document.createElement('th');
+        manaRegenDesc.innerHTML = `${obj.users[heroName].Stats.Mana_Regen_Base + (obj.users[heroName].Stats.Intelligence * 0.05)} + ${(obj.users[heroName].Stats.Intelligence_Scale * 0.05).toFixed(2)} per level`;
+        manaRegenRow.appendChild(manaRegenDesc);
+        statTable.appendChild(manaRegenRow);
+        
+        //armor
+        let armorRow = document.createElement('tr');
+        let armor = document.createElement('th');
+        armor.innerHTML = "Armor";
+        armorRow.appendChild(armor);
+        let armorDesc = document.createElement('th');
+        armorDesc.innerHTML = `${(obj.users[heroName].Stats.Armor_Base + (obj.users[heroName].Stats.Agility * 0.167)).toFixed(2)} + ${(obj.users[heroName].Stats.Agility_Scale * 0.167).toFixed(2)} per level`;
+        armorRow.appendChild(armorDesc);
+        statTable.appendChild(armorRow);
+        
+        //attacks per second
+        let apsRow = document.createElement('tr');
+        let aps = document.createElement('th');
+        aps.innerHTML = "Attacks Per Second";
+        apsRow.appendChild(aps);
+        let apsDesc = document.createElement('th');
+        apsDesc.innerHTML = `${(1/obj.users[heroName].Stats.Base_Attack_Time).toFixed(2)}`;
+        apsRow.appendChild(apsDesc);
+        statTable.appendChild(apsRow);
+        
+        //damage
+        let damageRow = document.createElement('tr');
+        let damage = document.createElement('th');
+        damage.innerHTML = "Damage";
+        damageRow.appendChild(damage);
+        let damageDesc = document.createElement('th');
+        damageDesc.innerHTML = `${(obj.users[heroName].Stats.Damage_Base_Low_End + obj.users[heroName].Stats.Strength)} - ${obj.users[heroName].Stats.Damage_Base_Top_End + obj.users[heroName].Stats.Strength} + ${obj.users[heroName].Stats.Strength_Scale} per level`;
+        damageRow.appendChild(damageDesc);
+        statTable.appendChild(damageRow);
+        
+        //magic resist
+        let magicResistRow = document.createElement('tr');
+        let magicResist = document.createElement('th');
+        magicResist.innerHTML = "Magical Resistance";
+        magicResistRow.appendChild(magicResist);
+        let magicResistDesc = document.createElement('th');
+        magicResistDesc.innerHTML = `${obj.users[heroName].Stats.Magic_Resistance}`;
+        magicResistRow.appendChild(magicResistDesc);
+        statTable.appendChild(magicResistRow);
+        
+        //movement Speed
+        let moveSpeedRow = document.createElement('tr');
+        let moveSpeed = document.createElement('th');
+        moveSpeed.innerHTML = "Movement Speed";
+        moveSpeedRow.appendChild(moveSpeed);
+        let moveSpeedDesc = document.createElement('th');
+        moveSpeedDesc.innerHTML = `${obj.users[heroName].Stats.Movement_Speed}`;
+        moveSpeedRow.appendChild(moveSpeedDesc);
+        statTable.appendChild(moveSpeedRow);
+        
+        //attack speed
+        let attackSpeedRow = document.createElement('tr');
+        let attackSpeed = document.createElement('th');
+        attackSpeed.innerHTML = "Attack Speed";
+        attackSpeedRow.appendChild(attackSpeed);
+        let attackSpeedDesc = document.createElement('th');
+        attackSpeedDesc.innerHTML = `${obj.users[heroName].Stats.Attack_Speed}`;
+        attackSpeedRow.appendChild(attackSpeedDesc);
+        statTable.appendChild(attackSpeedRow);
+        
+        //turn rate
+        let turnRateRow = document.createElement('tr');
+        let turnRate = document.createElement('th');
+        turnRate.innerHTML = "Turn Rate";
+        turnRateRow.appendChild(turnRate);
+        let turnRateDesc = document.createElement('th');
+        turnRateDesc.innerHTML = `${obj.users[heroName].Stats.Turn_Rate}`;
+        turnRateRow.appendChild(turnRateDesc);
+        statTable.appendChild(turnRateRow);
+        
+        //vision range
+        let visionRow = document.createElement('tr');
+        let vision = document.createElement('th');
+        vision.innerHTML = "Turn Rate";
+        visionRow.appendChild(vision);
+        let visionDesc = document.createElement('th');
+        visionDesc.innerHTML = `${obj.users[heroName].Stats.Vision_Range_Top_End} Day/ ${obj.users[heroName].Stats.Vision_Range_Low_End} Night`;
+        visionRow.appendChild(visionDesc);
+        statTable.appendChild(visionRow);
+        
+        //attack range
+        let attackRangeRow = document.createElement('tr');
+        let attackRange = document.createElement('th');
+        attackRange.innerHTML = "Attackk Range";
+        attackRangeRow.appendChild(attackRange);
+        let attackRangeDesc = document.createElement('th');
+        attackRangeDesc.innerHTML = `${obj.users[heroName].Stats.Attack_Range}`;
+        attackRangeRow.appendChild(attackRangeDesc);
+        statTable.appendChild(attackRangeRow);
+        
+        //projectile speed
+        let projSpeedRow = document.createElement('tr');
+        let projSpeed = document.createElement('th');
+        projSpeed.innerHTML = "Projectile Speed";
+        projSpeedRow.appendChild(projSpeed);
+        let projSpeedDesc = document.createElement('th');
+        projSpeedDesc.innerHTML = `${obj.users[heroName].Stats.Projectile_Speed}`;
+        projSpeedRow.appendChild(projSpeedDesc);
+        statTable.appendChild(projSpeedRow);
+        
+        //attack animation
+        let attackAnimationRow = document.createElement('tr');
+        let attackAnimation = document.createElement('th');
+        attackAnimation.innerHTML = "Attack Animation";
+        attackAnimationRow.appendChild(attackAnimation);
+        let attackAnimationDesc = document.createElement('th');
+        attackAnimationDesc.innerHTML = `${obj.users[heroName].Stats.Attack_Animation_Attack_Point}s Cast Point, ${obj.users[heroName].Stats.Attack_Animation_Back_Swing}s Cast Backswing`;
+        attackAnimationRow.appendChild(attackAnimationDesc);
+        statTable.appendChild(attackAnimationRow);
+        
+        //base attack time
+        let baseAttackTimeRow = document.createElement('tr');
+        let baseAttackTime = document.createElement('th');
+        baseAttackTime.innerHTML = "Base Attack Time";
+        baseAttackTimeRow.appendChild(baseAttackTime);
+        let baseAttackTimeDesc = document.createElement('th');
+        baseAttackTimeDesc.innerHTML = `${obj.users[heroName].Stats.Base_Attack_Time}`;
+        baseAttackTimeRow.appendChild(baseAttackTimeDesc);
+        statTable.appendChild(baseAttackTimeRow);
+        
+        //damage block
+        let damageBlockRow = document.createElement('tr');
+        let damageBlock = document.createElement('th');
+        damageBlock.innerHTML = "Damage Block";
+        damageBlockRow.appendChild(damageBlock);
+        let damageBlockDesc = document.createElement('th');
+        damageBlockDesc.innerHTML = `${obj.users[heroName].Stats.Damage_Block}`;
+        damageBlockRow.appendChild(damageBlockDesc);
+        statTable.appendChild(damageBlockRow);
+        
+        //collision size
+        let collisionSizeRow = document.createElement('tr');
+        let collisionSize = document.createElement('th');
+        collisionSize.innerHTML = "Collision Size";
+        collisionSizeRow.appendChild(collisionSize);
+        let collisionSizeDesc = document.createElement('th');
+        collisionSizeDesc.innerHTML = `${obj.users[heroName].Stats.Collision_Size}`;
+        collisionSizeRow.appendChild(collisionSizeDesc);
+        statTable.appendChild(collisionSizeRow);
+        
+        //legs
+        let legsRow = document.createElement('tr');
+        let legs = document.createElement('th');
+        legs.innerHTML = "Collision Size";
+        legsRow.appendChild(legs);
+        let legsDesc = document.createElement('th');
+        legsDesc.innerHTML = `${obj.users[heroName].Stats.Legs}`;
+        legsRow.appendChild(legsDesc);
+        statTable.appendChild(legsRow);
+    };
+    
+    const createTalentTable = (obj, heroName, portraitSection) => {
+        let talentsSection = document.createElement("section");
+        talentsSection.className = 'talent';
+        portraitSection.appendChild(talentsSection);
+        
+        let talents = document.createElement('h2');
+        talents.innerHTML = "Talents";
+        talents.className = "talents";
+        talentsSection.appendChild(talents);
+        
+        //make a table for all the information of the talent
+        let talentTable = document.createElement("table");
+        talentsSection.appendChild(talentTable);
+        
+        //labels row
+        let descRow = document.createElement('tr');
+        let talent1 = document.createElement('th');
+        talent1.innerHTML = "Talent Choice 1";
+        descRow.appendChild(talent1);
+        let levelLabel = document.createElement('th');
+        levelLabel.innerHTML = "Level";
+        descRow.appendChild(levelLabel);
+        let talent2 = document.createElement('th');
+        talent2.innerHTML = "Talent Choice 2";
+        descRow.appendChild(talent2);
+        talentTable.appendChild(descRow);
+        
+        let talentLevelIndex = 10;
+        while(talentLevelIndex != 0){
+            if(obj.users[heroName].Talents.Level[talentLevelIndex]){
+                
+                let row = document.createElement('tr');
+                
+                let choice1 = document.createElement('th');
+                choice1.innerHTML = obj.users[heroName].Talents.Level[talentLevelIndex].Choice_1;
+                row.appendChild(choice1);
+                let talentLevel = document.createElement('th');
+                talentLevel.innerHTML = talentLevelIndex;
+                row.appendChild(talentLevel);
+                let choice2 = document.createElement('th');
+                choice2.innerHTML = obj.users[heroName].Talents.Level[talentLevelIndex].Choice_2;
+                row.appendChild(choice2);
+                talentTable.appendChild(row);
+                
+                
+                talentLevelIndex+=5;//increment
+            }else{
+                talentLevelIndex = 0;
+            }
+        }
+    };
+    
+    const createHeroInfoSection = (obj, heroName, content) => {
+        let heroInfoSection = document.createElement("section");
+        heroInfoSection.className = 'heroInfo';
+        content.appendChild(heroInfoSection);
+        
+        //hero Lore
+        let lore = document.createElement('h2');
+        lore.innerHTML = "Lore";
+        lore.className = "lore";
+        heroInfoSection.appendChild(lore);
+        let loreDesc = document.createElement('p');
+        loreDesc.innerHTML = obj.users[heroName].Lore;
+        loreDesc.className = "lore";
+        heroInfoSection.appendChild(loreDesc);
+        
+        //Skills dynamically because some heroes have different amount of skills
+        let skills = document.createElement('h2');
+        skills.innerHTML = "Skills";
+        skills.className = "skills";
+        heroInfoSection.appendChild(skills);
+        
+        let skillLabel = "Skill_";
+        let skillIndex = 1;
+        let fullSkillLabel = (skillLabel + skillIndex).toString();
+        
+        while(skillIndex != 0){ //later will make the index 0 if there is no further skills left
+            //check to see if current skillIndex exists
+            if(obj.users[heroName].Skills[fullSkillLabel]){
+                //make the skill index section
+                let skillSection = document.createElement("section");
+                skillSection.className = "skills";
+                heroInfoSection.appendChild(skillSection);
+                
+                //make the name of the skill with the skill index
+                let skillNumber = document.createElement('h3');
+                skillNumber.className = "skillNumber";
+                skillNumber.innerHTML = `Skill ${skillIndex}: ${obj.users[heroName].Skills[fullSkillLabel].Name}`;   
+                skillSection.appendChild(skillNumber);
+                
+                //skill description
+                let skillDescName = document.createElement('p');
+                skillDescName.className = "skillDesc";
+                skillDescName.innerHTML = "Description";
+                skillSection.appendChild(skillDescName);
+                let skillDesc = document.createElement('p');
+                skillDesc.innerHTML = obj.users[heroName].Skills[fullSkillLabel].Description;
+                skillSection.appendChild(skillDesc);
+                
+                //make a table for all the information of the skill
+                let skillTable = document.createElement("table");
+                skillSection.appendChild(skillTable);
+                
+                //levels available
+                let levelRow = document.createElement('tr');
+                let level = document.createElement('th');
+                level.innerHTML = "Levels Available";
+                levelRow.appendChild(level);
+                let levelDesc = document.createElement('th');
+                levelDesc.innerHTML = `${obj.users[heroName].Skills[fullSkillLabel].Levels}`;
+                levelRow.appendChild(levelDesc);
+                skillTable.appendChild(levelRow);
+                
+                //adding the attributes into the skill table
+                let attributeLabelFront = "Att_";
+                let attributeLabelName = "_Name";
+                let attributeLabelDesc = "_Desc";
+                let attributeIndex = 1;
+                let fullAttributeLabelName = (attributeLabelFront + attributeIndex + attributeLabelName).toString();
+                let fullAttributeLabelDesc = (attributeLabelFront + attributeIndex + attributeLabelDesc).toString();
+                
+                while(attributeIndex != 0){ //later will make the index 0 if there is no further skills left
+                    //checks to see if the name and desc of the current index exists
+                    if(obj.users[heroName].Skills[fullSkillLabel].Skill_Attributes[fullAttributeLabelName] && obj.users[heroName].Skills[fullSkillLabel].Skill_Attributes[fullAttributeLabelDesc]){
+                        
+                        let skillAttributeRow = document.createElement('tr');
+                        let skillAttributeName = document.createElement('th');
+                        skillAttributeName.innerHTML = obj.users[heroName].Skills[fullSkillLabel].Skill_Attributes[fullAttributeLabelName];
+                        skillAttributeRow.appendChild(skillAttributeName);
+                        
+                        let skillAttributeDesc = document.createElement('th');
+                        skillAttributeDesc.innerHTML = obj.users[heroName].Skills[fullSkillLabel].Skill_Attributes[fullAttributeLabelDesc];
+                        skillAttributeRow.appendChild(skillAttributeDesc);
+                        skillTable.appendChild(skillAttributeRow);
+                        
+                        
+                        
+                        attributeIndex++; //increment
+                        fullAttributeLabelName = (attributeLabelFront + attributeIndex + attributeLabelName).toString();
+                        fullAttributeLabelDesc = (attributeLabelFront + attributeIndex + attributeLabelDesc).toString();
+                    }else{
+                        attributeIndex = 0;
+                    }
+                }
+                
+                
+                skillIndex++; //increment
+                fullSkillLabel = (skillLabel + skillIndex).toString();
+            }else{
+                skillIndex = 0;
+            }
+        }
+        
+    };
     
     const handleResponse = (xhr, parseResponses) => {
         const content = document.querySelector('#content');
@@ -49,13 +516,6 @@
         parseJSON(xhr, content);
         
         
-        //getting all the data needed and putting it into view
-        //get the object from user
-        const obj = JSON.parse(xhr.response);
-        //const obj = JSON.parse(xhr.response);
-        let heroName = document.createElement('h1');
-        heroName.innerHTML = obj.users.name;
-        content.appendChild(heroName);
         
         
         //if(parseResponses){
@@ -93,7 +553,7 @@
 
     const requestUpdate = (e, userForm) => {
         const url = userForm.querySelector('#urlField').value;
-        const method = userForm.querySelector('#methodSelect').value;
+        const method = document.querySelector('#methodSelect').value;
         
         const xhr = new XMLHttpRequest();
         xhr.open(method, url);
@@ -120,8 +580,12 @@
         const addUser = (e) => sendPost(e, nameForm);
         
         userForm.addEventListener('submit', getUsers);
-        nameForm.addEventListener('submit', addUser);
+        
+        
+        //nameForm.addEventListener('submit', addUser);
     };
+    
+    
 
     window.onload = init;
 
@@ -150,10 +614,17 @@
         <option value="get">GET</option>
         <option value="head">HEAD</option>
       </select>
-      <input type="submit" value="Get User" />
+      <select id="heroName">
+          <option value="Axe">Axe</option>
+          <option value="QOP">QOP</option>
+      </select>
+      <input type="submit" value="Get Hero Data" />
     </form>
+    
+    
   </section>
   <section id="content">
+       <!--<img src="../images/logo.png" alt="dota 2 logo"> -->
   </section>
 </body>
 </html>

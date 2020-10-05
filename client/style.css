@@ -16,6 +16,26 @@ html, body {
 
 #content {
   margin-top: 100px;
-  font-size: 2em;
   text-align: center;
+}
+
+#content h1 {
+    font-size: 2em;
+}
+
+.portrait, .heroInfo{
+    width:49%;
+    display:inline-block;
+    margin-bottom: 2%;
+    vertical-align:top;
+}
+
+th, .lore, .skillNumber, .skillDesc, .skills, .talents{
+    text-align: left;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.skillDesc{
+    font-weight: bold;
 }

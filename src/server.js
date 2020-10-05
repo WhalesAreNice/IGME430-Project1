@@ -3,6 +3,7 @@ const url = require('url');
 const query = require('querystring');
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
+const imageHandler = require('./imageResponses.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
@@ -45,6 +46,7 @@ const urlStruct = {
     '/style.css': htmlHandler.getCSS,
     '/getUsers': jsonHandler.getUsers,
     '/updateUser': jsonHandler.updateUser,
+    '/loadImage': imageHandler.getImage,
     notFound: jsonHandler.notFound,
   },
   HEAD: {
@@ -55,17 +57,21 @@ const urlStruct = {
 
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
+    const params = query.parse(parsedUrl.query);
 
   console.dir(parsedUrl.pathname);
   console.dir(request.method);
+    
 
   if (request.method === 'POST') {
     handlePost(request, response, parsedUrl);
-  } else if (urlStruct[request.method][parsedUrl.pathname]) {
-    urlStruct[request.method][parsedUrl.pathname](request, response);
+  }else if (urlStruct[request.method][parsedUrl.pathname]) {
+    urlStruct[request.method][parsedUrl.pathname](request, response, params);
   } else {
-    urlStruct[request.method].notFound(request, response);
+    urlStruct[request.method].notFound(request, response, params);
   }
+    
+    
 };
 
 http.createServer(onRequest).listen(port);
